@@ -17,7 +17,10 @@ package org.odk.collect.android.widgets;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -134,6 +137,7 @@ public class TimeWidget extends QuestionWidget {
         timeTextView.setId(QuestionWidget.newUniqueId());
         timeTextView.setPadding(20, 20, 20, 20);
         timeTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, answerFontsize);
+        timeTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.primaryTextColor));
     }
 
     private void addViews() {
@@ -195,9 +199,10 @@ public class TimeWidget extends QuestionWidget {
         private String dialogTitle = getContext().getString(R.string.select_time);
 
         CustomTimePickerDialog(Context context, OnTimeSetListener callBack, int hour, int minute) {
-            super(context, callBack, hour, minute, DateFormat.is24HourFormat(context));
+            super(context, android.R.style.Theme_Holo_Light_Dialog, callBack, hour, minute, DateFormat.is24HourFormat(context));
             setTitle(dialogTitle);
             fixSpinner(context, hour, minute, DateFormat.is24HourFormat(context));
+            getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         }
 
         public void setTitle(CharSequence title) {
@@ -216,7 +221,7 @@ public class TimeWidget extends QuestionWidget {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 try {
                     // Get the theme's android:timePickerMode
-                    final int MODE_SPINNER = 1;
+                    final int MODE_SPINNER = 2;
                     Class<?> styleableClass = Class.forName("com.android.internal.R$styleable");
                     Field timePickerStyleableField = styleableClass.getField("TimePicker");
                     int[] timePickerStyleable = (int[]) timePickerStyleableField.get(null);

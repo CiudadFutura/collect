@@ -14,7 +14,6 @@
 
 package org.odk.collect.android.activities;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -27,6 +26,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -46,14 +47,17 @@ import org.odk.collect.android.R;
 import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.dao.InstancesDao;
 import org.odk.collect.android.preferences.AboutPreferencesActivity;
-import org.odk.collect.android.preferences.AdminPreferencesActivity;
 import org.odk.collect.android.preferences.AdminKeys;
-import org.odk.collect.android.preferences.PreferencesActivity;
+import org.odk.collect.android.preferences.AdminPreferencesActivity;
+import org.odk.collect.android.preferences.AutoSendPreferenceMigrator;
 import org.odk.collect.android.preferences.PreferenceKeys;
+import org.odk.collect.android.preferences.PreferencesActivity;
 import org.odk.collect.android.provider.InstanceProviderAPI.InstanceColumns;
 import org.odk.collect.android.utilities.ApplicationConstants;
+import org.odk.collect.android.utilities.AuthDialogUtility;
 import org.odk.collect.android.utilities.PlayServicesUtil;
 import org.odk.collect.android.utilities.ToastUtils;
+import org.odk.collect.android.utilities.SharedPreferencesUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -72,14 +76,10 @@ import timber.log.Timber;
  * @author Carl Hartung (carlhartung@gmail.com)
  * @author Yaw Anokwa (yanokwa@gmail.com)
  */
-public class MainMenuActivity extends Activity {
+public class MainMenuActivity extends AppCompatActivity {
 
     private static final int PASSWORD_DIALOG = 1;
 
-    // menu options
-    private static final int MENU_ABOUT = Menu.FIRST;
-    private static final int MENU_PREFERENCES = Menu.FIRST + 1;
-    private static final int MENU_ADMIN = Menu.FIRST + 2;
     private static final boolean EXIT = true;
     // buttons
     private Button enterDataButton;
@@ -107,6 +107,7 @@ public class MainMenuActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_menu);
+        initToolbar();
 
         // enter data button. expects a result.
         enterDataButton = (Button) findViewById(R.id.enter_data);
@@ -209,8 +210,6 @@ public class MainMenuActivity extends Activity {
             }
         });
 
-        setTitle(getString(R.string.main_menu));
-
         // must be at the beginning of any activity that can be called from an
         // external intent
         Timber.i("Starting up, creating directories");
@@ -229,7 +228,23 @@ public class MainMenuActivity extends Activity {
         }
 
         File f = new File(Collect.ODK_ROOT + "/collect.settings");
-        if (f.exists()) {
+        File j = new File(Collect.ODK_ROOT + "/collect.settings.json");
+        // Give JSON file preference
+        if (j.exists()) {
+            SharedPreferencesUtils sharedPrefs = new SharedPreferencesUtils();
+            boolean success = sharedPrefs.loadSharedPreferencesFromJSONFile(j);
+            if (success) {
+                ToastUtils.showLongToast(R.string.settings_successfully_loaded_file_notification);
+                j.delete();
+
+                // Delete settings file to prevent overwrite of settings from JSON file on next startup
+                if (f.exists()) {
+                    f.delete();
+                }
+            } else {
+                ToastUtils.showLongToast(R.string.corrupt_settings_file_notification);
+            }
+        } else if (f.exists()) {
             boolean success = loadSharedPreferencesFromFile(f);
             if (success) {
                 ToastUtils.showLongToast(R.string.settings_successfully_loaded_file_notification);
@@ -290,6 +305,12 @@ public class MainMenuActivity extends Activity {
 
         updateButtons();
         setupGoogleAnalytics();
+    }
+
+    private void initToolbar() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setTitle(getString(R.string.main_menu));
+        setSupportActionBar(toolbar);
     }
 
     @Override
@@ -401,24 +422,14 @@ public class MainMenuActivity extends Activity {
                 .logAction(this, "onCreateOptionsMenu", "show");
         super.onCreateOptionsMenu(menu);
 
-        menu.add(0, MENU_ABOUT, 0, R.string.about_preferences).setShowAsAction(
-                MenuItem.SHOW_AS_ACTION_NEVER);
-        menu
-                .add(0, MENU_PREFERENCES, 0, R.string.general_preferences)
-                .setIcon(R.drawable.ic_menu_preferences)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
-
-        menu
-                .add(0, MENU_ADMIN, 0, R.string.admin_preferences)
-                .setIcon(R.drawable.ic_menu_login)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+        getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case MENU_ABOUT:
+            case R.id.menu_about:
                 Collect.getInstance()
                         .getActivityLogger()
                         .logAction(this, "onOptionsItemSelected",
@@ -426,7 +437,7 @@ public class MainMenuActivity extends Activity {
                 Intent aboutIntent = new Intent(this, AboutPreferencesActivity.class);
                 startActivity(aboutIntent);
                 return true;
-            case MENU_PREFERENCES:
+            case R.id.menu_general_preferences:
                 Collect.getInstance()
                         .getActivityLogger()
                         .logAction(this, "onOptionsItemSelected",
@@ -434,7 +445,7 @@ public class MainMenuActivity extends Activity {
                 Intent ig = new Intent(this, PreferencesActivity.class);
                 startActivity(ig);
                 return true;
-            case MENU_ADMIN:
+            case R.id.menu_admin_preferences:
                 Collect.getInstance().getActivityLogger()
                         .logAction(this, "onOptionsItemSelected", "MENU_ADMIN");
                 String pw = adminPreferences.getString(
@@ -571,7 +582,7 @@ public class MainMenuActivity extends Activity {
         } else {
             sendDataButton.setText(getString(R.string.send_data));
             Timber.w("Cannot update \"Send Finalized\" button label since the database is closed. "
-                            + "Perhaps the app is running in the background?");
+                    + "Perhaps the app is running in the background?");
         }
 
         if (savedCursor != null && !savedCursor.isClosed()) {
@@ -586,7 +597,7 @@ public class MainMenuActivity extends Activity {
         } else {
             reviewDataButton.setText(getString(R.string.review_data));
             Timber.w("Cannot update \"Edit Form\" button label since the database is closed. "
-                            + "Perhaps the app is running in the background?");
+                    + "Perhaps the app is running in the background?");
         }
 
         if (viewSentCursor != null && !viewSentCursor.isClosed()) {
@@ -601,7 +612,7 @@ public class MainMenuActivity extends Activity {
         } else {
             viewSentFormsButton.setText(getString(R.string.view_sent_forms));
             Timber.w("Cannot update \"View Sent\" button label since the database is closed. "
-                            + "Perhaps the app is running in the background?");
+                    + "Perhaps the app is running in the background?");
         }
     }
 
@@ -616,23 +627,27 @@ public class MainMenuActivity extends Activity {
             prefEdit.clear();
             // first object is preferences
             Map<String, ?> entries = (Map<String, ?>) input.readObject();
+
+            AutoSendPreferenceMigrator.migrate(entries);
+
             for (Entry<String, ?> entry : entries.entrySet()) {
                 Object v = entry.getValue();
                 String key = entry.getKey();
 
                 if (v instanceof Boolean) {
-                    prefEdit.putBoolean(key, ((Boolean) v).booleanValue());
+                    prefEdit.putBoolean(key, (Boolean) v);
                 } else if (v instanceof Float) {
-                    prefEdit.putFloat(key, ((Float) v).floatValue());
+                    prefEdit.putFloat(key, (Float) v);
                 } else if (v instanceof Integer) {
-                    prefEdit.putInt(key, ((Integer) v).intValue());
+                    prefEdit.putInt(key, (Integer) v);
                 } else if (v instanceof Long) {
-                    prefEdit.putLong(key, ((Long) v).longValue());
+                    prefEdit.putLong(key, (Long) v);
                 } else if (v instanceof String) {
                     prefEdit.putString(key, ((String) v));
                 }
             }
             prefEdit.apply();
+            AuthDialogUtility.setWebCredentialsFromPreferences(this);
 
             // second object is admin options
             Editor adminEdit = getSharedPreferences(AdminPreferencesActivity.ADMIN_PREFERENCES,
@@ -645,13 +660,13 @@ public class MainMenuActivity extends Activity {
                 String key = entry.getKey();
 
                 if (v instanceof Boolean) {
-                    adminEdit.putBoolean(key, ((Boolean) v).booleanValue());
+                    adminEdit.putBoolean(key, (Boolean) v);
                 } else if (v instanceof Float) {
-                    adminEdit.putFloat(key, ((Float) v).floatValue());
+                    adminEdit.putFloat(key, (Float) v);
                 } else if (v instanceof Integer) {
-                    adminEdit.putInt(key, ((Integer) v).intValue());
+                    adminEdit.putInt(key, (Integer) v);
                 } else if (v instanceof Long) {
-                    adminEdit.putLong(key, ((Long) v).longValue());
+                    adminEdit.putLong(key, (Long) v);
                 } else if (v instanceof String) {
                     adminEdit.putString(key, ((String) v));
                 }

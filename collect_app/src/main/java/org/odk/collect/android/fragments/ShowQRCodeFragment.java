@@ -24,6 +24,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -41,9 +42,13 @@ import com.google.zxing.integration.android.IntentResult;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.odk.collect.android.R;
+import org.odk.collect.android.activities.MainMenuActivity;
 import org.odk.collect.android.activities.ScannerWithFlashlightActivity;
+import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.listeners.QRCodeListener;
+import org.odk.collect.android.preferences.AdminPreferencesActivity;
 import org.odk.collect.android.utilities.CompressionUtils;
+import org.odk.collect.android.utilities.LocaleHelper;
 import org.odk.collect.android.utilities.SharedPreferencesUtils;
 import org.odk.collect.android.utilities.ToastUtils;
 
@@ -66,10 +71,6 @@ import static org.odk.collect.android.utilities.QRCodeUtils.generateQRBitMap;
 import static org.odk.collect.android.utilities.QRCodeUtils.saveBitmapToCache;
 
 
-/**
- * Created by shobhit on 6/4/17.
- */
-
 public class ShowQRCodeFragment extends Fragment implements View.OnClickListener, QRCodeListener {
 
     private static final int SELECT_PHOTO = 111;
@@ -82,8 +83,10 @@ public class ShowQRCodeFragment extends Fragment implements View.OnClickListener
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        getActivity().setTitle(getString(R.string.import_export_settings));
         View view = inflater.inflate(R.layout.show_qrcode_fragment, container, false);
+        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+        toolbar.setTitle(getString(R.string.import_export_settings));
+        ((AdminPreferencesActivity) getActivity()).setSupportActionBar(toolbar);
         setHasOptionsMenu(true);
         setRetainInstance(true);
         qrImageView = (ImageView) view.findViewById(R.id.qr_iv);
@@ -237,18 +240,45 @@ public class ShowQRCodeFragment extends Fragment implements View.OnClickListener
         }
 
         getActivity().finish();
+        final LocaleHelper localeHelper = new LocaleHelper();
+        localeHelper.updateLocale(getActivity());
+        Intent intent = new Intent(getActivity().getBaseContext(), MainMenuActivity.class);
+        getActivity().startActivity(intent);
+        getActivity().overridePendingTransition(0, 0);
+        getActivity().finishAffinity();
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.share_menu, menu);
+        inflater.inflate(R.menu.settings_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_item_share) {
-            getActivity().startActivity(Intent.createChooser(shareIntent, getString(R.string.share_qrcode)));
+        switch (item.getItemId()) {
+            case R.id.menu_item_share:
+                getActivity().startActivity(Intent.createChooser(shareIntent, getString(R.string.share_qrcode)));
+                return true;
+            case R.id.menu_save_preferences:
+                File writeDir = new File(Collect.SETTINGS);
+                if (!writeDir.exists()) {
+                    if (!writeDir.mkdirs()) {
+                        ToastUtils.showShortToast("Error creating directory "
+                                + writeDir.getAbsolutePath());
+                        return false;
+                    }
+                }
+
+                File dst = new File(writeDir.getAbsolutePath() + "/collect.settings");
+                boolean success = AdminPreferencesActivity.saveSharedPreferencesToFile(dst, getActivity());
+                if (success) {
+                    ToastUtils.showLongToast("Settings successfully written to "
+                            + dst.getAbsolutePath());
+                } else {
+                    ToastUtils.showLongToast("Error writing settings to " + dst.getAbsolutePath());
+                }
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

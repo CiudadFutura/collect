@@ -48,7 +48,7 @@ public class WidgetFactory {
         // for now, all appearance tags are in english...
         appearance = appearance.toLowerCase(Locale.ENGLISH);
 
-        QuestionWidget questionWidget;
+        QuestionWidget questionWidget = new StringWidget(context, fep, readOnlyOverride);
         switch (fep.getControlType()) {
             case Constants.CONTROL_INPUT:
                 switch (fep.getDataType()) {
@@ -114,9 +114,6 @@ public class WidgetFactory {
                     case Constants.DATATYPE_BOOLEAN:
                         questionWidget = new BooleanWidget(context, fep);
                         break;
-                    default:
-                        questionWidget = new StringWidget(context, fep, readOnlyOverride);
-                        break;
                 }
                 break;
             case Constants.CONTROL_IMAGE_CHOOSE:
@@ -130,8 +127,10 @@ public class WidgetFactory {
                     questionWidget = new DrawWidget(context, fep);
                 } else if (appearance.startsWith("align:")) {
                     questionWidget = new AlignedImageWidget(context, fep);
+                } else if (appearance.equals("selfie")) {
+                    questionWidget = new ImageWidget(context, fep, true);
                 } else {
-                    questionWidget = new ImageWidget(context, fep);
+                    questionWidget = new ImageWidget(context, fep, false);
                 }
                 break;
             case Constants.CONTROL_OSM_CAPTURE:
@@ -214,11 +213,17 @@ public class WidgetFactory {
             case Constants.CONTROL_TRIGGER:
                 questionWidget = new TriggerWidget(context, fep);
                 break;
-            default:
-                questionWidget = new StringWidget(context, fep, readOnlyOverride);
+            case Constants.CONTROL_RANGE:
+                switch (fep.getDataType()) {
+                    case Constants.DATATYPE_INTEGER:
+                        questionWidget = new RangeIntegerWidget(context, fep);
+                        break;
+                    case Constants.DATATYPE_DECIMAL:
+                        questionWidget = new RangeDecimalWidget(context, fep);
+                        break;
+                }
                 break;
         }
         return questionWidget;
     }
-
 }

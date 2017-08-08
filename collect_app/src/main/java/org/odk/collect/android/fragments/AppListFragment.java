@@ -23,6 +23,7 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -174,7 +175,7 @@ abstract class AppListFragment extends ListFragment {
             public View getView(int position, View convertView, ViewGroup parent) {
                 TextView textView = (TextView) super.getView(position, convertView, parent);
                 if (position == getSelectedSortingOrder()) {
-                    textView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.light_blue));
+                    textView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.tintColor));
                 }
                 textView.setPadding(50, 0, 0, 0);
                 return textView;
@@ -185,7 +186,7 @@ abstract class AppListFragment extends ListFragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 parent.getChildAt(selectedSortingOrder).setBackgroundColor(Color.TRANSPARENT);
-                view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.light_blue));
+                view.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.tintColor));
                 performSelectedSearch(position);
                 drawerLayout.closeDrawer(Gravity.END);
             }
@@ -205,6 +206,13 @@ abstract class AppListFragment extends ListFragment {
         if (drawerToggle != null) {
             drawerToggle.syncState();
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+        toolbar.setNavigationIcon(R.drawable.notes);
     }
 
     private void setupDrawer(View rootView) {

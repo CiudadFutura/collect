@@ -16,15 +16,18 @@
 
 package org.odk.collect.android.activities;
 
-import android.app.ListActivity;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
@@ -52,11 +55,8 @@ import java.util.List;
 
 import static org.odk.collect.android.utilities.ApplicationConstants.SortingOrder.BY_NAME_ASC;
 
-abstract class AppListActivity extends ListActivity {
+abstract class AppListActivity extends AppCompatActivity {
     protected final ActivityLogger logger = Collect.getInstance().getActivityLogger();
-
-    private static final int MENU_SORT = Menu.FIRST;
-    public static final int MENU_FILTER = MENU_SORT + 1;
 
     private static final String SELECTED_INSTANCES = "selectedInstances";
     private static final String IS_SEARCH_BOX_SHOWN = "isSearchBoxShown";
@@ -73,7 +73,27 @@ abstract class AppListActivity extends ListActivity {
 
     private boolean isSearchBoxShown;
 
-    private Integer selectedSortingOrder;
+    protected Integer selectedSortingOrder;
+    protected Toolbar toolbar;
+    protected ListView listView;
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        listView = (ListView) findViewById(android.R.id.list);
+        listView.setOnItemClickListener((AdapterView.OnItemClickListener) this);
+
+        TextView emptyView = (TextView) findViewById(android.R.id.empty);
+        listView.setEmptyView(emptyView);
+
+        initToolbar();
+    }
+
+    private void initToolbar() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        setSupportActionBar(toolbar);
+    }
 
     @Override
     protected void onResume() {
@@ -102,25 +122,16 @@ abstract class AppListActivity extends ListActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         Collect.getInstance().getActivityLogger().logInstanceAction(this, "onCreateOptionsMenu", "show");
+        getMenuInflater().inflate(R.menu.list_menu, menu);
+
         super.onCreateOptionsMenu(menu);
-
-        menu
-                .add(0, MENU_SORT, 0, R.string.sort_the_list)
-                .setIcon(R.drawable.ic_sort)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-
-        menu
-                .add(0, MENU_FILTER, 0, R.string.filter_the_list)
-                .setIcon(R.drawable.ic_search)
-                .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case MENU_SORT:
+            case R.id.menu_sort:
                 if (drawerLayout.isDrawerOpen(Gravity.END)) {
                     drawerLayout.closeDrawer(Gravity.END);
                 } else {
@@ -129,7 +140,7 @@ abstract class AppListActivity extends ListActivity {
                 }
                 return true;
 
-            case MENU_FILTER:
+            case R.id.menu_filter:
                 if (searchBoxLayout.getVisibility() == View.GONE) {
                     showSearchBox();
                 } else {
@@ -193,11 +204,12 @@ abstract class AppListActivity extends ListActivity {
 
     private void setupDrawerItems() {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, sortingOptions) {
+            @NonNull
             @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
+            public View getView(int position, View convertView, @NonNull ViewGroup parent) {
                 TextView textView = (TextView) super.getView(position, convertView, parent);
                 if (position == getSelectedSortingOrder()) {
-                    textView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.light_blue));
+                    textView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.tintColor));
                 }
                 textView.setPadding(50, 0, 0, 0);
                 return textView;
@@ -208,7 +220,7 @@ abstract class AppListActivity extends ListActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 parent.getChildAt(selectedSortingOrder).setBackgroundColor(Color.TRANSPARENT);
-                view.setBackgroundColor(ContextCompat.getColor(getBaseContext(), R.color.light_blue));
+                view.setBackgroundColor(ContextCompat.getColor(getBaseContext(), R.color.tintColor));
                 performSelectedSearch(position);
                 drawerLayout.closeDrawer(Gravity.END);
             }
@@ -227,13 +239,13 @@ abstract class AppListActivity extends ListActivity {
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.sorting_menu_open, R.string.sorting_menu_close) {
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                invalidateOptionsMenu();
+                supportInvalidateOptionsMenu();
                 drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
             }
 
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-                invalidateOptionsMenu();
+                supportInvalidateOptionsMenu();
                 drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
             }
         };
@@ -243,7 +255,7 @@ abstract class AppListActivity extends ListActivity {
     }
 
     protected void checkPreviouslyCheckedItems() {
-        getListView().clearChoices();
+        listView.clearChoices();
         List<Integer> selectedPositions = new ArrayList<>();
         int listViewPosition = 0;
         Cursor cursor = listAdapter.getCursor();
@@ -258,7 +270,7 @@ abstract class AppListActivity extends ListActivity {
         }
 
         for (int position : selectedPositions) {
-            getListView().setItemChecked(position, true);
+            listView.setItemChecked(position, true);
         }
     }
 
@@ -270,27 +282,8 @@ abstract class AppListActivity extends ListActivity {
         return getCheckedCount() > 0;
     }
 
-    /**
-     * Returns the IDs of the checked items, using the ListView provided
-     */
-    protected long[] getCheckedIds(ListView lv) {
-        // This method could be simplified by using getCheckedItemIds, if one ensured that
-        // IDs were “stable” (see the getCheckedItemIds doc).
-        int itemCount = lv.getCount();
-        int checkedItemCount = lv.getCheckedItemCount();
-        long[] checkedIds = new long[checkedItemCount];
-        int resultIndex = 0;
-        for (int posIdx = 0; posIdx < itemCount; posIdx++) {
-            if (lv.isItemChecked(posIdx)) {
-                checkedIds[resultIndex] = lv.getItemIdAtPosition(posIdx);
-                resultIndex++;
-            }
-        }
-        return checkedIds;
-    }
-
     protected int getCheckedCount() {
-        return getListView().getCheckedItemCount();
+        return listView.getCheckedItemCount();
     }
 
     // toggles to all checked or all unchecked

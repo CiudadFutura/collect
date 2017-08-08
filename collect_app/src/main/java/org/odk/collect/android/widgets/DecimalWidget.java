@@ -17,6 +17,7 @@ package org.odk.collect.android.widgets;
 import android.content.Context;
 import android.text.InputFilter;
 import android.text.InputType;
+import android.text.Selection;
 import android.text.method.DigitsKeyListener;
 import android.util.TypedValue;
 
@@ -41,7 +42,7 @@ public class DecimalWidget extends StringWidget {
             Object dataValue = dataHolder.getValue();
             if (dataValue != null) {
                 if (dataValue instanceof Integer) {
-                    d = Double.valueOf(((Integer) dataValue).intValue());
+                    d = (double) (Integer) dataValue;
                 } else {
                     d = (Double) dataValue;
                 }
@@ -69,19 +70,19 @@ public class DecimalWidget extends StringWidget {
         fa[0] = new InputFilter.LengthFilter(15);
         answer.setFilters(fa);
 
-        NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
-        nf.setMaximumFractionDigits(15);
-        nf.setMaximumIntegerDigits(15);
-        nf.setGroupingUsed(false);
-
         Double d = getDoubleAnswerValue();
 
         if (d != null) {
-            // truncate to 15 digits max...
-            String string = nf.format(d);
-            d = Double.parseDouble(string.replace(',', '.'));
-            //answer.setText(d.toString());
-            answer.setText(String.format(Locale.ENGLISH, "%f", d));
+            // truncate to 15 digits max in US locale
+            NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
+            nf.setMaximumFractionDigits(15);
+            nf.setMaximumIntegerDigits(15);
+            nf.setGroupingUsed(false);
+
+            String formattedValue = nf.format(d);
+            answer.setText(formattedValue);
+
+            Selection.setSelection(answer.getText(), answer.getText().length());
         }
 
         // disable if read only

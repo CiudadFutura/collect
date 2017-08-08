@@ -54,7 +54,9 @@ import org.xmlpull.v1.XmlPullParser;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
@@ -277,24 +279,29 @@ public final class WebUtils {
     /**
      * Utility to ensure that the entity stream of a response is drained of
      * bytes.
+     * Apparently some servers require that we manually read all data from the
+     * stream to allow its re-use.  Please add more details or bug ID here if
+     * you know them.
      */
     public static final void discardEntityBytes(HttpResponse response) {
-        // may be a server that does not handle
         HttpEntity entity = response.getEntity();
         if (entity != null) {
+            InputStream is = null;
             try {
-                // have to read the stream in order to reuse the connection
-                InputStream is = response.getEntity().getContent();
-                // read to end of stream...
-                final long count = 1024L;
-                while (is.skip(count) == count) {
-                    // skipping to the end of the http entity
+                is = response.getEntity().getContent();
+                while (is.read() != -1) {
+                    // loop until all bytes read
                 }
-                is.close();
-            } catch (IOException e) {
-                Timber.e(e, "Unable read the stream");
             } catch (Exception e) {
-                Timber.e(e);
+                Timber.i(e);
+            } finally {
+                if (is != null) {
+                    try {
+                        is.close();
+                    } catch (IOException e) {
+                        Timber.d(e);
+                    }
+                }
             }
         }
     }
@@ -305,12 +312,12 @@ public final class WebUtils {
      */
     public static DocumentFetchResult getXmlDocument(String urlString,
             HttpContext localContext, HttpClient httpclient) {
-        URI u = null;
+        URI u;
         try {
             URL url = new URL(urlString);
             u = url.toURI();
-        } catch (Exception e) {
-            Timber.e(e, "Error converting URL %s to uri", urlString);
+        } catch (URISyntaxException | MalformedURLException e) {
+            Timber.i(e, "Error converting URL %s to uri", urlString);
             return new DocumentFetchResult(e.getLocalizedMessage()
                     // + app.getString(R.string.while_accessing) + urlString);
                     + ("while accessing") + urlString, 0);
@@ -329,7 +336,7 @@ public final class WebUtils {
         HttpGet req = WebUtils.createOpenRosaHttpGet(u);
         req.addHeader(WebUtils.ACCEPT_ENCODING_HEADER, WebUtils.GZIP_CONTENT_ENCODING);
 
-        HttpResponse response = null;
+        HttpResponse response;
         try {
             response = httpclient.execute(req, localContext);
             int statusCode = response.getStatusLine().getStatusCode();

@@ -4,11 +4,11 @@ apply plugin: 'checkstyle'
 import com.android.ddmlib.DdmPreferences
 DdmPreferences.setTimeOut(60000)
 
-ant.condition(property: 'os', value: 'windows') { 
-    os(family: 'windows') 
+ant.condition(property: 'os', value: 'windows') {
+    os(family: 'windows')
 }
-ant.condition(property: 'os', value: 'unix') { 
-    os(family: 'unix') 
+ant.condition(property: 'os', value: 'unix') {
+    os(family: 'unix')
 }
 
 // Build numbers were manually set until 1067
@@ -55,6 +55,12 @@ def getVersionName = { ->
     }
 }
 
+def secretsFile = file('secrets.properties')
+def secrets = new Properties()
+if (secretsFile.exists()) {
+    secrets.load(new FileInputStream(secretsFile))
+}
+
 android {
     compileSdkVersion(25)
     buildToolsVersion('25.0.2')
@@ -69,8 +75,22 @@ android {
         multiDexEnabled true
     }
 
+    signingConfigs {
+        release {
+            if (secrets.getProperty('RELEASE_STORE_FILE')) {
+                storeFile file(secrets.getProperty('RELEASE_STORE_FILE'))
+                storePassword secrets.getProperty('RELEASE_STORE_PASSWORD')
+                keyAlias secrets.getProperty('RELEASE_KEY_ALIAS')
+                keyPassword secrets.getProperty('RELEASE_KEY_PASSWORD')
+            }
+        }
+    }
+
     buildTypes {
         release {
+            if (secrets.getProperty('RELEASE_STORE_FILE')) {
+                signingConfig signingConfigs.release
+            }
             minifyEnabled(true)
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
@@ -78,6 +98,14 @@ android {
             debuggable(true)
             // Allows AndroidTest JaCoCo reports to be generated
             testCoverageEnabled(true)
+        }
+    }
+
+    // https://stackoverflow.com/a/27119543/152938
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            def file = output.outputFile
+            output.outputFile = new File(file.parent, file.name.replace("_app","").replace(".apk", "-" + defaultConfig.versionName + ".apk"))
         }
     }
 
@@ -110,7 +138,7 @@ android {
 }
 
 // Required to use fileExtensions property in checkstyle file
-checkstyle.toolVersion = '7.6.1' 
+checkstyle.toolVersion = '7.6.1'
 
 // The normal check task reports nothing probably because Android uses its own sourceSets
 task checkstyle(type: Checkstyle) {
@@ -135,7 +163,9 @@ allprojects {
 
 dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
-    compile group: 'com.android.support', name: 'appcompat-v7', version: '25.1.0'
+    compile group: 'com.android.support', name: 'appcompat-v7', version: '25.3.1'
+    compile group: 'com.android.support', name: 'design', version: '25.3.1'
+    compile group: 'com.android.support', name: 'cardview-v7', version: '25.3.1'
     compile group: 'com.android.support', name: 'multidex', version: '1.0.1'
     compile group: 'com.google.android.gms', name: 'play-services-analytics', version: '10.0.1'
     compile group: 'com.google.android.gms', name: 'play-services-auth', version: '10.0.1'
@@ -156,7 +186,7 @@ dependencies {
     compile group: 'joda-time', name: 'joda-time', version: '2.9.7'
     compile group: 'net.sf.kxml', name: 'kxml2', version: '2.3.0'
     compile group: 'net.sf.opencsv', name: 'opencsv', version: '2.3'
-    compile group: 'org.opendatakit', name: 'opendatakit-javarosa', version: '2.1.0'
+    compile group: 'org.opendatakit', name: 'opendatakit-javarosa', version: '2.4.0'
     compile group: 'org.osmdroid', name: 'osmdroid-android', version: '5.6.4'
     compile group: 'org.slf4j', name: 'slf4j-android', version: '1.6.1-RC1'
     compile group: 'pub.devrel', name: 'easypermissions', version: '0.2.1'
@@ -164,16 +194,18 @@ dependencies {
     compile(group: 'com.google.apis', name: 'google-api-services-drive', version: 'v3-rev64-1.22.0') { exclude group: 'org.apache.httpcomponents' }
     compile(group: 'com.google.apis', name: 'google-api-services-sheets', version: 'v4-rev463-1.22.0') { exclude group: 'org.apache.httpcomponents' }
     compile group: 'com.jakewharton.timber', name: 'timber', version: '4.5.1'
-    compile group: 'com.android.support', name: 'customtabs', version: '25.1.0'
+    compile group: 'com.android.support', name: 'customtabs', version: '25.3.1'
+    compile group: 'com.android.support', name: 'design', version: '25.3.1'
     compile group: 'com.google.zxing', name: 'core', version: '3.2.0'
     compile group: 'com.journeyapps', name: 'zxing-android-embedded', version: '3.5.0'
+    compile group: 'com.android.support', name: 'support-v13', version: '25.3.1'
 
     // Testing-only dependencies
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile group: 'org.mockito', name: 'mockito-core', version: '1.10.19'
     testCompile group: 'org.robolectric', name: 'robolectric', version: '3.1.2'
     testCompile group: 'org.robolectric', name: 'shadows-multidex', version: '3.0'
-    androidTestCompile group: 'com.android.support', name: 'support-annotations', version: '25.1.0'
+    androidTestCompile group: 'com.android.support', name: 'support-annotations', version: '25.3.1'
     androidTestCompile group: 'com.android.support.test', name: 'runner', version: '0.5'
     androidTestCompile group: 'com.android.support.test', name: 'rules', version: '0.5'
     androidTestCompile group: 'com.squareup.okhttp3', name: 'mockwebserver', version: '3.2.0'

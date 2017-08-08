@@ -15,12 +15,13 @@
 package org.odk.collect.android.preferences;
 
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
-import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,34 +42,36 @@ import static org.odk.collect.android.preferences.AdminKeys.KEY_CHANGE_ADMIN_PAS
 import static org.odk.collect.android.preferences.AdminKeys.KEY_IMPORT_SETTINGS;
 
 
-public class AdminPreferencesFragment extends PreferenceFragment implements Preference.OnPreferenceClickListener {
+public class AdminPreferencesFragment extends BasePreferenceFragment implements Preference.OnPreferenceClickListener {
 
     public static final String ADMIN_PREFERENCES = "admin_prefs";
 
     @Override
-    public void onResume() {
-        super.onResume();
-        getActivity().setTitle(getString(R.string.admin_preferences));
-    }
-
-    @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
         PreferenceManager prefMgr = getPreferenceManager();
         prefMgr.setSharedPreferencesName(ADMIN_PREFERENCES);
         prefMgr.setSharedPreferencesMode(MODE_WORLD_READABLE);
 
         addPreferencesFromResource(R.xml.admin_preferences);
 
-        Preference changeAdminPwPreference = findPreference(KEY_CHANGE_ADMIN_PASSWORD);
-        changeAdminPwPreference.setOnPreferenceClickListener(this);
-        Preference syncSettings = findPreference(KEY_IMPORT_SETTINGS);
-        syncSettings.setOnPreferenceClickListener(this);
+        findPreference(KEY_CHANGE_ADMIN_PASSWORD).setOnPreferenceClickListener(this);
+        findPreference(KEY_IMPORT_SETTINGS).setOnPreferenceClickListener(this);
+        findPreference("main_menu").setOnPreferenceClickListener(this);
+        findPreference("user_settings").setOnPreferenceClickListener(this);
+        findPreference("form_entry").setOnPreferenceClickListener(this);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        toolbar.setTitle(R.string.admin_preferences);
     }
 
     @Override
     public boolean onPreferenceClick(Preference preference) {
+
+        Fragment fragment = null;
 
         switch (preference.getKey()) {
 
@@ -132,12 +135,108 @@ public class AdminPreferencesFragment extends PreferenceFragment implements Pref
                 break;
 
             case KEY_IMPORT_SETTINGS:
-                getActivity().getFragmentManager().beginTransaction()
-                        .replace(android.R.id.content, new ShowQRCodeFragment())
-                        .addToBackStack(null)
-                        .commit();
+                fragment = new ShowQRCodeFragment();
+                break;
+
+            case "main_menu":
+                fragment = new MainMenuAccessPreferences();
+                break;
+            case "user_settings":
+                fragment = new UserSettingsAccessPreferences();
+                break;
+            case "form_entry":
+                fragment = new FormEntryAccessPreferences();
                 break;
         }
+
+        if (fragment != null) {
+            getActivity().getFragmentManager().beginTransaction()
+                    .replace(android.R.id.content, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        }
+
         return true;
+    }
+
+    public static class MainMenuAccessPreferences extends BasePreferenceFragment {
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            PreferenceManager prefMgr = getPreferenceManager();
+            prefMgr.setSharedPreferencesName(ADMIN_PREFERENCES);
+            prefMgr.setSharedPreferencesMode(MODE_WORLD_READABLE);
+
+            addPreferencesFromResource(R.xml.main_menu_access_preferences);
+        }
+
+        @Override
+        public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+            super.onViewCreated(view, savedInstanceState);
+            toolbar.setTitle(R.string.main_menu_settings);
+        }
+
+        @Override
+        public void onDetach() {
+            super.onDetach();
+            if (toolbar != null) {
+                toolbar.setTitle(R.string.admin_preferences);
+            }
+        }
+    }
+
+
+    public static class UserSettingsAccessPreferences extends BasePreferenceFragment {
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            PreferenceManager prefMgr = getPreferenceManager();
+            prefMgr.setSharedPreferencesName(ADMIN_PREFERENCES);
+            prefMgr.setSharedPreferencesMode(MODE_WORLD_READABLE);
+
+            addPreferencesFromResource(R.xml.user_settings_access_preferences);
+        }
+
+        @Override
+        public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+            super.onViewCreated(view, savedInstanceState);
+            toolbar.setTitle(R.string.user_settings);
+        }
+
+        @Override
+        public void onDetach() {
+            super.onDetach();
+            if (toolbar != null) {
+                toolbar.setTitle(R.string.admin_preferences);
+            }
+        }
+    }
+
+    public static class FormEntryAccessPreferences extends BasePreferenceFragment {
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            PreferenceManager prefMgr = getPreferenceManager();
+            prefMgr.setSharedPreferencesName(ADMIN_PREFERENCES);
+            prefMgr.setSharedPreferencesMode(MODE_WORLD_READABLE);
+
+            addPreferencesFromResource(R.xml.form_entry_access_preferences);
+        }
+
+        @Override
+        public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+            super.onViewCreated(view, savedInstanceState);
+            toolbar.setTitle(R.string.form_entry_setting);
+        }
+
+        @Override
+        public void onDetach() {
+            super.onDetach();
+            if (toolbar != null) {
+                toolbar.setTitle(R.string.admin_preferences);
+            }
+        }
     }
 }
