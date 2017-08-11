@@ -89,7 +89,7 @@
     <string name="location_provider_accuracy">Using %1$s. Accuracy is %2$s m.</string>
     <string name="location_accuracy">Accuracy is %1$s m</string>
     <string name="main_menu">Main Menu</string>
-    <string name="main_menu_details">Data collection made easier…</string>
+    <string name="main_menu_details">Haciendo Patria</string>
     <string name="manage_files">Delete Saved Form</string>
     <string name="mark_finished">Mark form as finalized</string>
     <string name="noselect_error">Sorry, you have not selected any forms!</string>
@@ -140,7 +140,7 @@
     <string name="select_another_image">Select another image</string>
     <string name="use_odk_default">Use default image</string>
     <string name="change_splash_path">Change image</string>
-    <string name="app_url">http://opendatakit.org</string>
+    <string name="app_url">http://ciudadfutura.com.ar</string>
     <string name="keep_changes">Save Changes</string>
     <string name="change_formlist_url">Form list path (appended to URL)</string>
     <string name="change_protocol">Platform</string>

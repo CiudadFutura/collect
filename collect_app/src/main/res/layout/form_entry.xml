@@ -18,9 +18,7 @@ the License.
     android:layout_height="match_parent">
     <!-- Toolbar -->
     <include
-        layout="@layout/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        layout="@layout/toolbar"/>
 
     <include
         layout="@layout/toolbar_action_bar_shadow"

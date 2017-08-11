@@ -4,12 +4,12 @@
         android:key="form_submission"
         android:title="@string/form_submission_category">
         <ListPreference
-            android:defaultValue="off"
             android:dialogTitle="@string/autosend_selector_title"
             android:entries="@array/autosend_selector_entries"
             android:entryValues="@array/autosend_selector_entries_values"
             android:key="autosend"
-            android:title="@string/autosend" />
+            android:title="@string/autosend"
+            android:defaultValue="wifi_and_cellular"/>
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="delete_send"
