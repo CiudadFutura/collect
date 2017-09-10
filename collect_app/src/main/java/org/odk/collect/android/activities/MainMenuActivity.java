@@ -102,11 +102,20 @@ public class MainMenuActivity extends Activity {
     private MyContentObserver contentObserver = new MyContentObserver();
 
     // private static boolean DO_NOT_EXIT = false;
+    private boolean GetForms = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_menu);
+        
+        // Cuando arranca vamos a buscar los forms (una vez)
+        if (GetForms){
+                Intent i = new Intent(getApplicationContext(), FormDownloadList.class);
+                i.putExtra("autoGetForms", true);
+                startActivity(i);
+                GetForms = false;
+        }
 
         // enter data button. expects a result.
         enterDataButton = (Button) findViewById(R.id.enter_data);
