@@ -134,7 +134,8 @@ public class GoogleDriveActivity extends AppCompatActivity implements
 
     private void initToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setTitle(getString(R.string.google_drive));
+        //setTitle(getString(R.string.google_drive));
+        setTitle("");
         setSupportActionBar(toolbar);
     }
 
@@ -246,7 +247,7 @@ public class GoogleDriveActivity extends AppCompatActivity implements
         JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
         driveService = new com.google.api.services.drive.Drive.Builder(
                 transport, jsonFactory, credential)
-                .setApplicationName("ODK-Collect")
+                .setApplicationName("Colector-CiudadFutura")
                 .build();
 
         getResultsFromApi();

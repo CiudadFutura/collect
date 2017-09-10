@@ -112,11 +112,11 @@ public class InstanceGoogleSheetsUploader extends InstanceUploader {
         JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
         sheetsService = new com.google.api.services.sheets.v4.Sheets.Builder(
                 transport, jsonFactory, credential)
-                .setApplicationName("ODK-Collect")
+                .setApplicationName("Colector-CiudadFutura")
                 .build();
         driveService = new com.google.api.services.drive.Drive.Builder(
                 transport, jsonFactory, credential)
-                .setApplicationName("ODK-Collect")
+                .setApplicationName("Colector-CiudadFutura")
                 .build();
     }
 

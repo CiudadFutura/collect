@@ -69,8 +69,9 @@ android {
         applicationId('org.ciudadfutura.colector.android')
         minSdkVersion(16)
         targetSdkVersion(22)
-        versionCode LEGACY_BUILD_NUMBER_OFFSET + getMasterCommitCount()
-        versionName "2.017" //getVersionName()
+        //versionCode LEGACY_BUILD_NUMBER_OFFSET + getMasterCommitCount()
+        versionCode 2285
+        versionName "Fiscal20 2.1" //getVersionName()
         testInstrumentationRunner('android.support.test.runner.AndroidJUnitRunner')
         multiDexEnabled true
     }
@@ -106,6 +107,7 @@ android {
         variant.outputs.each { output ->
             def file = output.outputFile
             output.outputFile = new File(file.parent, file.name.replace("_app","").replace(".apk", "-" + defaultConfig.versionName + ".apk"))
+            //output.outputFile = new File(file.parent, "org.ciudadfutura.colector.android.apk")
         }
     }
 

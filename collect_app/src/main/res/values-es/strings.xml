@@ -1,5 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
+  <string name="odk_auth_auth_fail">Colector CF auto envío fallo de autenticación, por favor, revise la configuración.</string>
+  <string name="odk_auto_note">Auto envío de notificación Colector CF</string>
   <string name="show_password">Mostrar contraseña</string>
   <string name="activity_not_found">No se encontró actividad para manejar: %s</string>
   <string name="add_another">Agregar Grupo</string>
@@ -19,7 +21,7 @@
   <string name="capture_video">Grabar el Video</string>
   <string name="change_language">Cambiar el Idioma</string>
   <string name="change_password">Contraseña</string>
-  <string name="change_username">Nombre de Usuario ODK</string>
+  <string name="change_username">Nombre de Usuario CFC</string>
   <string name="clearanswer_confirm">¿Borrar la respuesta a \"%s\"?</string>
   <string name="clear_answer">Borrar respuesta</string>
   <string name="clear_answer_ask">¿Borrar esta respuesta?</string>
@@ -124,7 +126,7 @@
   <string name="client">Interfaz de usuario</string>
   <string name="show_splash_summary">Muestra cuando la aplicacion empieza</string>
   <string name="splash_path">Seleccione la Imagen para la pantalla inicial</string>
-  <string name="default_splash_path">Predeterminado por ODK</string>
+  <string name="default_splash_path">Predeterminado por CFC</string>
   <string name="select_another_image">Seleccione otra imagen</string>
   <string name="use_odk_default">Usar la imagen por defecto</string>
   <string name="change_splash_path">Cambiar la imagen</string>
@@ -159,7 +161,7 @@
   <string name="save_as_error">¡El nombre no puede estar en blanco!</string>
   <string name="edit_prompt">Editar entrada</string>
   <string name="selected_google_account_text">Cuenta de Google</string>
-  <string name="server_platform_odk_aggregate">ODK Aggregate</string>
+  <string name="server_platform_odk_aggregate">CCF Aggregate</string>
   <string name="server_platform_other">Otro</string>
   <string name="font_size_extra_large">Extra Grande</string>
   <string name="font_size_large">Grande</string>
@@ -262,7 +264,7 @@
   <string name="go_drive">Mi Drive</string>
   <string name="go_shared">Compartido conmigo</string>
   <string name="modified_on_date_at_time">\'Modificado el\' EEE, MMM dd, yyyy \'a las\' HH:mm</string>
-  <string name="aggregate_preferences">Ajustes de ODK Aggregate</string>
+  <string name="aggregate_preferences">Ajustes de CCF Aggregate</string>
   <string name="other_preferences">Ajustes de Otras Plataformas</string>
   <string name="google_preferences">Características de Google Sheets</string>
   <string name="google_sheets_url_hint">Los formularios deben establecer una URL para envio. Si no lo hacen, se usará la siguiente URL</string>
@@ -325,7 +327,7 @@
   <string name="polygon_or_polyline">Guardar RastroGeo como</string>
   <string name="minutes">Minutos</string>
   <string name="geo_clear_warning">Función ya creada. ¿Desea borrar la función?</string>
-  <string name="geo_exit_warning">¿Ignorar los cambios y volver a ODK?</string>
+  <string name="geo_exit_warning">¿Ignorar los cambios y volver a CFC?</string>
   <string name="polygon_validator">Debe tener al menos 3 puntos para crear un Polygon</string>
   <string name="dialog_continue">Continuar</string>
   <string name="clear">Limpiar</string>
@@ -346,7 +348,7 @@
   <string name="geotrace_view_change_location">Ver o cambiar RastroGeo</string>
   <string name="bearing">Bearing: %.3f</string>
   <string name="direction">Dirección: %s</string>
-  <string name="select_odk_shortcut">Seleccionar acceso directo ODK</string>
+  <string name="select_odk_shortcut">Seleccionar acceso directo CFC</string>
   <string name="bad_uri">URI erroneo: %s</string>
   <string name="unrecognized_uri">URI no reconocido: %s</string>
   <!--&lt; and &gt; surrounds the text so it will appear as <no form loaded>-->
@@ -365,7 +367,7 @@
   <string name="parser_exception">Excepción XPathParser: \"%s\"</string>
   <string name="selected_answer">Seleccionado: %s</string>
   <string name="version_number">Versión: %s</string>
-  <string name="odk_website">Visitar el sitio web de ODK</string>
+  <string name="odk_website">Visitar el sitio web de Ciudad Futura</string>
   <string name="odk_forum">Unirse al foro de ODK</string>
   <string name="all_open_source_licenses">Librerías y licencias de código abierto</string>
   <!--%1$s represents degrees, %2$s represents minutes and %3$s represents seconds as in W 18°48'8"-->
@@ -418,7 +420,7 @@
   <string name="sort_by_status_asc">Por estado, finalizado primero</string>
   <string name="sort_by_status_desc">Por estado, sin finalizar primero</string>
   <string name="sort_the_list">Ordenar la lista</string>
-  <string name="request_permissions_google_account">ODK Collect necesita acceder a tu cuenta de Google para obtener formularios en blanco y enviar formularios terminados.</string>
+  <string name="request_permissions_google_account">Colector CF necesita acceder a tu cuenta de Google para obtener formularios en blanco y enviar formularios terminados.</string>
   <string name="filter_the_list">Filtrar la lista</string>
   <string name="language">Idioma</string>
   <string name="form_metadata_title">Metadatos del formulario</string>

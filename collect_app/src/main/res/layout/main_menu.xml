@@ -107,7 +107,8 @@
                     android:padding="20dp"
                     android:textAllCaps="false"
                     android:textSize="21sp"
-                    android:textStyle="normal"/>
+                    android:textStyle="normal"
+                    android:visibility="invisible" />
 
                 <View
                     android:layout_width="match_parent"
@@ -134,7 +135,8 @@
                     android:padding="20dp"
                     android:textAllCaps="false"
                     android:textSize="21sp"
-                    android:textStyle="normal"/>
+                    android:textStyle="normal"
+                    android:visibility="invisible" />
 
                 <View
                     android:id="@+id/get_forms_spacer"
@@ -148,7 +150,8 @@
                     android:padding="20dp"
                     android:textAllCaps="false"
                     android:textSize="21sp"
-                    android:textStyle="normal"/>
+                    android:textStyle="normal"
+                    android:visibility="invisible" />
             </LinearLayout>
 
         </ScrollView>

@@ -30,8 +30,8 @@
     <string name="recapture_osm">Redo OSM Tagging</string>
     <string name="capture_video">Record Video</string>
     <string name="change_language">Change Language</string>
-    <string name="change_password">ODK Password</string>
-    <string name="change_username">ODK Username</string>
+    <string name="change_password">CFC Password</string>
+    <string name="change_username">CFC Username</string>
     <string name="clearanswer_confirm">Remove the response to \"%s\"?</string>
     <string name="clear_answer">Remove response</string>
     <string name="clear_answer_ask">Remove This Response?</string>
@@ -136,7 +136,7 @@
     <string name="client">User interface</string>
     <string name="show_splash_summary">Shows when application starts</string>
     <string name="splash_path">Selected splash image</string>
-    <string name="default_splash_path">ODK Default</string>
+    <string name="default_splash_path">CFC Default</string>
     <string name="select_another_image">Select another image</string>
     <string name="use_odk_default">Use default image</string>
     <string name="change_splash_path">Change image</string>
@@ -171,7 +171,7 @@
     <string name="save_as_error">Saved name must not be blank!</string>
     <string name="edit_prompt">Edit Prompt</string>
     <string name="selected_google_account_text">Google account</string>
-    <string name="server_platform_odk_aggregate">ODK Aggregate</string>
+    <string name="server_platform_odk_aggregate">CFC Aggregate</string>
     <string name="server_platform_other">Other</string>
     <string name="font_size_extra_large">Extra Large</string>
     <string name="font_size_large">Large</string>
@@ -268,7 +268,7 @@
     <string name="go_drive">My Drive</string>
     <string name="go_shared">Shared with Me</string>
     <string name="modified_on_date_at_time">\'Modified on\' EEE, MMM dd, yyyy \'at\' HH:mm</string>
-    <string name="aggregate_preferences">ODK Aggregate settings</string>
+    <string name="aggregate_preferences">Colector CF Aggregate settings</string>
     <string name="other_preferences">Other platform settings</string>
     <string name="google_preferences">Google Sheets settings</string>
     <string name="google_sheets_url_hint">Forms must set a submission URL. If they don\'t, this URL will be used.</string>
@@ -278,8 +278,8 @@
     <string name="invalid_oauth">Invalid OAuth 2 token</string>
     <string name="google_repeat_error">Repeats are not supported by Google Sheets at this time.</string>
     <string name="media_upload_error">Failed to upload photo that does not exist: %1$s</string>
-    <string name="odk_auth_auth_fail">ODK auto send authentication failure, please make sure your settings are correct</string>
-    <string name="odk_auto_note">ODK Auto Send Notification</string>
+    <string name="odk_auth_auth_fail">Colector CF auto send authentication failure, please make sure your settings are correct</string>
+    <string name="odk_auto_note">Colector CF Auto Send Notification</string>
     <string name="notification_error">Error displaying notification text</string>
     <string name="delete_after_send">Delete after send</string>
     <string name="delete_after_send_summary">Deletes finalized forms and media after sending to server</string>
@@ -338,7 +338,7 @@
     <string name="polygon_or_polyline">"Save GeoTrace As"</string>
     <string name="minutes">Minutes</string>
     <string name="geo_clear_warning">Feature already created. Would you like to clear the feature?</string>
-    <string name="geo_exit_warning">Discard changes and return to ODK?</string>
+    <string name="geo_exit_warning">Discard changes and return to CFC?</string>
     <string name="polygon_validator">Must have at least 3 points to create Polygon</string>
     <string name="dialog_continue">Continue</string>
     <string name="clear">Clear</string>
@@ -359,7 +359,7 @@
     <string name="geotrace_view_change_location">View or Change GeoTrace</string>
     <string name="bearing">Bearing: %.3f</string>
     <string name="direction">Direction: %s</string>
-    <string name="select_odk_shortcut">Select ODK Shortcut</string>
+    <string name="select_odk_shortcut">Select CFC Shortcut</string>
     <string name="bad_uri">Bad URI: %s</string>
     <string name="unrecognized_uri">Unrecognized URI: %s</string>
     <!-- &lt; and &gt; surrounds the text so it will appear as <no form loaded> -->
@@ -378,7 +378,7 @@
     <string name="parser_exception">XPathParser Exception: \"%s\"</string>
     <string name="selected_answer">Selected: %s</string>
     <string name="version_number">Version: %s</string>
-    <string name="odk_website">Visit the ODK website</string>
+    <string name="odk_website">Visit the Ciudad Futura website</string>
     <string name="odk_website_summary">Open Data Kit (ODK) is used to collect data for social good in challenging environments.</string>
     <string name="odk_forum">Join the ODK forum</string>
     <string name="odk_forum_summary">Join the forum to get support, request features, contribute code/translations!</string>
@@ -438,7 +438,7 @@
     <string name="sort_by_status_asc">Status, finalized first</string>
     <string name="sort_by_status_desc">Status, unfinalized first</string>
     <string name="sort_the_list">Sort the list</string>
-    <string name="request_permissions_google_account">ODK Collect needs access to your Google account to get blank forms and submit filled forms.</string>
+    <string name="request_permissions_google_account">Colector CF needs access to your Google account to get blank forms and submit filled forms.</string>
     <string name="filter_the_list">Filter the list</string>
     <string name="language">Language</string>
     <string name="google_auth_io_exception_msg">Unable to make API calls. If you are running a local build, please review the project readme.</string>
