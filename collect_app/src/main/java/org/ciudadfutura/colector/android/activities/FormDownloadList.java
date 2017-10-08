@@ -253,6 +253,11 @@ public class FormDownloadList extends FormListActivity implements FormListDownlo
         sortingOptions = new String[]{
                 getString(R.string.sort_by_name_asc), getString(R.string.sort_by_name_desc)
         };
+            
+        // Actualizamos la lista de formularios
+        if (getIntent().getExtras().getBoolean("autoGetForms")){
+                downloadFormList();
+        }
     }
 
     @Override
@@ -691,6 +696,11 @@ public class FormDownloadList extends FormListActivity implements FormListDownlo
             downloadButton.setEnabled(listView.getCheckedItemCount() > 0);
             toggleButtonLabel(toggleButton, listView);
         }
+            
+        // Si ya actualizó la lista actualizamos los formularios.
+        if (getIntent().getExtras().getBoolean("autoGetForms")){
+            downloadSelectedFiles();
+        }
     }
 
 
@@ -760,6 +770,11 @@ public class FormDownloadList extends FormListActivity implements FormListDownlo
         }
 
         createAlertDialog(getString(R.string.download_forms_result), b.toString().trim(), EXIT);
+        
+        // Si ya actualizó los formularios, volvemos.
+        if (getIntent().getExtras().getBoolean("autoGetForms")){
+                finish();
+        }
     }
 
     @Override
